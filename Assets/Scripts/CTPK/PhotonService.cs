@@ -14,6 +14,11 @@ namespace CTPK
 		[Inject] private readonly ISubscriber<string, string> _subscriber;
 		private IDisposable _subscription;
 
+		private void Awake()
+		{
+			PhotonNetwork.AutomaticallySyncScene = true;
+		}
+
 		public void Start()
 		{
 			var sub = _subscriber.Subscribe(Constants.PlayFabNicknameMessageKey, NicknameRecieved);
@@ -60,24 +65,14 @@ namespace CTPK
 		{
 		}
 
-		public override void OnLeftLobby()
-		{
-			base.OnLeftLobby();
-		}
-
-		public override void OnLeftRoom()
-		{
-			base.OnLeftRoom();
-		}
-
 		public override void OnCreateRoomFailed(short returnCode, string message)
 		{
-			base.OnCreateRoomFailed(returnCode, message);
+			Debug.LogError($"[Photon] OnCreateRoomFailed with code: {returnCode} and message: {message}");
 		}
 
 		public override void OnJoinRoomFailed(short returnCode, string message)
 		{
-			base.OnJoinRoomFailed(returnCode, message);
+			Debug.LogError($"[Photon] OnJoinRoomFailed with code: {returnCode} and message: {message}");
 		}
 
 		public override void OnCreatedRoom()
@@ -95,7 +90,7 @@ namespace CTPK
 
 		public override void OnJoinRandomFailed(short returnCode, string message)
 		{
-			base.OnJoinRandomFailed(returnCode, message);
+			Debug.LogError($"[Photon] OnJoinRandomFailed with code: {returnCode} and message: {message}");
 		}
 
 		public override void OnPlayerEnteredRoom(Player newPlayer)
@@ -105,7 +100,7 @@ namespace CTPK
 
 		public override void OnPlayerLeftRoom(Player otherPlayer)
 		{
-			base.OnPlayerLeftRoom(otherPlayer);
+			Debug.Log($"OnPlayerLeftRoom {otherPlayer.NickName}");
 		}
 
 		public override void OnRoomListUpdate(List<RoomInfo> roomList)
@@ -122,6 +117,11 @@ namespace CTPK
 
 		private void StartNewGame(PhotonCommand cmd)
 		{
+			if (!PhotonNetwork.IsMasterClient)
+			{
+				return;
+			}
+
 			PhotonNetwork.LoadLevel(Constants.CoreGameplaySceneName);
 		}
 	}

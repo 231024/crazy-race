@@ -1,4 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using CTPK;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
 //this script is used at the start of the race to show a 3, 2, 1, Go countdown
@@ -7,9 +10,19 @@ public class Countdown : MonoBehaviour
     [SerializeField] private GameObject CountDown, LapTimer, CarControls;//race objects that we will use in the coroutine
     [SerializeField] private AudioSource GetReady, GoAudio;//same with audio objects
 
-    void Start()
+    private void Start()
     {
-        StartCoroutine(CountStart());//when we hit play in the first menu, this scripts activates and start the countdown coroutine
+        var providers = FindObjectsOfType<AudioProvider>();
+        foreach (var provider in providers)
+        {
+            if (!provider.GetComponent<PhotonView>().IsMine)
+            {
+                continue;
+            }
+            GetReady = provider.GetReady;
+            GoAudio = provider.Go;
+        }
+        StartCoroutine(CountStart());
     }
 
     IEnumerator CountStart()
