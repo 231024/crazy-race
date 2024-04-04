@@ -1,7 +1,9 @@
 using System;
+using MessagePipe;
 using PlayFab;
 using PlayFab.ClientModels;
 using UnityEngine;
+using VContainer;
 using VContainer.Unity;
 
 namespace CTPK
@@ -10,10 +12,15 @@ namespace CTPK
 	{
 		private const string PlayerServerIdKey = "PlayerServerIdKey";
 
+		[Inject] private readonly IPublisher<string, string> _publisher;
+		[Inject] private readonly ISubscriber<string> _subscriber;
+		private string _nickname;
 		private string _uniqueKey;
 
 		public void Start()
 		{
+			_subscriber.Subscribe(NicknameChanged);
+
 			var needToCreate = false;
 			if (PlayerPrefs.HasKey(PlayerServerIdKey))
 			{
@@ -38,14 +45,27 @@ namespace CTPK
 			PlayFabClientAPI.GetPlayerProfile(get, OnSuccess, OnError);
 		}
 
+		private void OnSuccess(UpdateUserTitleDisplayNameResult res)
+		{
+			_nickname = res.DisplayName;
+			_publisher.Publish(Constants.PlayFabNicknameMessageKey, _nickname);
+		}
+
 		private void OnSuccess(GetPlayerProfileResult res)
 		{
-			Debug.Log(res.PlayerProfile.DisplayName);
+			_nickname = res.PlayerProfile.DisplayName;
+			_publisher.Publish(Constants.PlayFabNicknameMessageKey, _nickname);
 		}
 
 		private void OnError(PlayFabError er)
 		{
 			Debug.LogError(er.Error);
+		}
+
+		private void NicknameChanged(string nickname)
+		{
+			var nicknameReq = new UpdateUserTitleDisplayNameRequest { DisplayName = nickname };
+			PlayFabClientAPI.UpdateUserTitleDisplayName(nicknameReq, OnSuccess, OnError);
 		}
 	}
 }
