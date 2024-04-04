@@ -19,7 +19,7 @@ namespace CTPK
 
 			builder.RegisterComponent(_view);
 			builder.RegisterEntryPoint<MenuPresenter>();
-			builder.RegisterEntryPoint<PlayFabService>();
+			builder.RegisterEntryPoint<PlayFabService>().AsSelf();
 			builder.RegisterComponent(_photon);
 		}
 	}

@@ -1,4 +1,5 @@
 using System;
+using Photon.Pun;
 using UnityEngine;
 
 namespace UnityStandardAssets.Vehicles.Car
@@ -36,6 +37,8 @@ namespace UnityStandardAssets.Vehicles.Car
         [SerializeField] private float m_RevRangeBoundary = 1f;
         [SerializeField] private float m_SlipLimit;
         [SerializeField] private float m_BrakeTorque;
+        [SerializeField] private Rigidbody m_Rigidbody;
+        [SerializeField] private PhotonView m_PhotonView;
 
         private Quaternion[] m_WheelMeshLocalRotations;
         private Vector3 m_Prevpos, m_Pos;
@@ -44,7 +47,6 @@ namespace UnityStandardAssets.Vehicles.Car
         private float m_GearFactor;
         private float m_OldRotation;
         private float m_CurrentTorque;
-        private Rigidbody m_Rigidbody;
         private const float k_ReversingThreshold = 0.01f;
 
         public bool Skidding { get; private set; }
@@ -128,6 +130,11 @@ namespace UnityStandardAssets.Vehicles.Car
 
         public void Move(float steering, float accel, float footbrake, float handbrake)
         {
+            if (!m_PhotonView.IsMine)
+            {
+                return;
+            }
+            
             for (int i = 0; i < 4; i++)
             {
                 Quaternion quat;
