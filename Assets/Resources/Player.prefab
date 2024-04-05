@@ -1232,6 +1232,7 @@ GameObject:
   - component: {fileID: 9066629243281431641}
   - component: {fileID: 1727642339984182993}
   - component: {fileID: 4290942525021216862}
+  - component: {fileID: 2355984552028301932}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1275,7 +1276,12 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
+  - {fileID: 2355984552028301932}
   - {fileID: 4336484622715933389}
+  - {fileID: 7366351608584417184}
+  - {fileID: 8544968007795279202}
+  - {fileID: 8354705140703359486}
+  - {fileID: 3032092826129249385}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -1293,6 +1299,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _getReady: {fileID: 7920813310390641197}
   _go: {fileID: 7065954879720703494}
+--- !u!114 &2355984552028301932
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5935735916725777976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00eeb2ff4e9d348ea93d29babf643c22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _view: {fileID: 1727642339984182993}
 --- !u!1 &6252621848038796519
 GameObject:
   m_ObjectHideFlags: 0

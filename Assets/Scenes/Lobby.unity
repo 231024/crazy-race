@@ -700,7 +700,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentReference:
-    TypeName: 
+    TypeName: ProjectLifetimeScope
   autoRun: 1
   autoInjectGameObjects:
   - {fileID: 1039023133}

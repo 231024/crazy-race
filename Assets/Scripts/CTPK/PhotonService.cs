@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ExitGames.Client.Photon;
 using MessagePipe;
 using Photon.Pun;
 using Photon.Realtime;
@@ -21,7 +22,7 @@ namespace CTPK
 
 		public void Start()
 		{
-			var sub = _subscriber.Subscribe(Constants.PlayFabNicknameMessageKey, NicknameRecieved);
+			var sub = _subscriber.Subscribe(Constants.PlayFabNicknameMessageKey, NicknameReceived);
 			var punSub = _punSubscriber.Subscribe(StartNewGame);
 
 			_subscription = DisposableBag.Create(sub, punSub);
@@ -32,7 +33,7 @@ namespace CTPK
 			_subscription?.Dispose();
 		}
 
-		private void NicknameRecieved(string nickname)
+		private void NicknameReceived(string nickname)
 		{
 			PhotonNetwork.NickName = nickname;
 
@@ -86,6 +87,9 @@ namespace CTPK
 			{
 				Debug.Log($"{player.Key}: {player.Value}");
 			}
+
+			PhotonNetwork.SetPlayerCustomProperties(new Hashtable
+				{ { "index", PhotonNetwork.CurrentRoom.PlayerCount - 1 } });
 		}
 
 		public override void OnJoinRandomFailed(short returnCode, string message)
@@ -123,6 +127,11 @@ namespace CTPK
 			}
 
 			PhotonNetwork.LoadLevel(Constants.CoreGameplaySceneName);
+		}
+
+		public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+		{
+			Debug.Log($"OnPlayerPropertiesUpdate {targetPlayer.NickName}, {changedProps["index"]}");
 		}
 	}
 }
