@@ -8,6 +8,7 @@ namespace CTPK
 	public class LobbyLifetimeScope : LifetimeScope
 	{
 		[SerializeField] private MenuView _view;
+		[SerializeField] private RoomListView _roomListView;
 		[SerializeField] private PhotonService _photon;
 
 		protected override void Configure(IContainerBuilder builder)
@@ -21,6 +22,7 @@ namespace CTPK
 			builder.RegisterEntryPoint<MenuPresenter>();
 			builder.RegisterEntryPoint<PlayFabService>().AsSelf();
 			builder.RegisterComponent(_photon);
+			builder.RegisterComponent(_roomListView);
 		}
 	}
 }

@@ -13,6 +13,7 @@ namespace CTPK
 	{
 		[Inject] private readonly ISubscriber<PhotonCommand> _punSubscriber;
 		[Inject] private readonly ISubscriber<string, string> _subscriber;
+		[Inject] private RoomListView _roomListView;
 		private IDisposable _subscription;
 
 		private void Awake()
@@ -22,10 +23,11 @@ namespace CTPK
 
 		public void Start()
 		{
-			var sub = _subscriber.Subscribe(Constants.PlayFabNicknameMessageKey, NicknameReceived);
-			var punSub = _punSubscriber.Subscribe(StartNewGame);
+			var sub1 = _subscriber.Subscribe(Constants.PlayFabNicknameMessageKey, NicknameReceived);
+			var sub2 = _subscriber.Subscribe(Constants.PhotonCurrentRoomNameKey, JoinRoom);
+			var sub3 = _punSubscriber.Subscribe(HandleCommand);
 
-			_subscription = DisposableBag.Create(sub, punSub);
+			_subscription = DisposableBag.Create(sub1, sub2, sub3);
 		}
 
 		public void Dispose()
@@ -109,29 +111,33 @@ namespace CTPK
 
 		public override void OnRoomListUpdate(List<RoomInfo> roomList)
 		{
-			foreach (var info in roomList)
-			{
-				Debug.Log($"OnRoomListUpdate {info.Name}, {info.PlayerCount}");
-				PhotonNetwork.JoinRoom(info.Name);
-				return;
-			}
-
-			PhotonNetwork.CreateRoom(Guid.NewGuid().ToString());
+			_roomListView.Refresh(roomList);
 		}
 
-		private void StartNewGame(PhotonCommand cmd)
+		private void HandleCommand(PhotonCommand cmd)
 		{
-			if (!PhotonNetwork.IsMasterClient)
+			switch (cmd)
 			{
-				return;
+				case PhotonCommand.StartGame:
+					if (PhotonNetwork.IsMasterClient)
+					{
+						PhotonNetwork.LoadLevel(Constants.CoreGameplaySceneName);
+					}
+					break;
+				case PhotonCommand.CreateRoom:
+					PhotonNetwork.CreateRoom(Guid.NewGuid().ToString());
+					break;
 			}
-
-			PhotonNetwork.LoadLevel(Constants.CoreGameplaySceneName);
 		}
 
 		public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
 		{
 			Debug.Log($"OnPlayerPropertiesUpdate {targetPlayer.NickName}, {changedProps["index"]}");
+		}
+
+		private void JoinRoom(string roomName)
+		{
+			PhotonNetwork.JoinRoom(roomName);
 		}
 	}
 }
