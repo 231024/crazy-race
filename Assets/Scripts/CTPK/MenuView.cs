@@ -30,5 +30,10 @@ namespace CTPK
 		{
 			_punPublisher.Publish(PhotonCommand.StartGame);
 		}
+
+		public void OnCreateButtonClick()
+		{
+			_punPublisher.Publish(PhotonCommand.CreateRoom);
+		}
 	}
 }
